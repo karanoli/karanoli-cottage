@@ -1,5 +1,7 @@
 # karanoli的小屋
 
+> 本项目由 **ChatGPT 6.1 sol** 根据需求生成，并在使用过程中通过需求反馈、问题复现与多轮修改逐步完善。
+
 一个使用 Django 构建的个人博客与数独练习网站。管理员上传 Markdown 文件发布文章，读者登录后参与评论，数独作为独立的“小游戏”栏目提供。
 
 数独小游戏包含用户账户、四级题库、持久化棋盘和候选数、教学提示、三次错误失败、金币、每日免费提示、游客模式、图片 OCR/直接输入投稿与后台管理。项目展示与简历描述见 [项目展示与简历说明](项目展示与简历说明.md)，维护入口见 [MAINTENANCE.md](MAINTENANCE.md)。
@@ -37,11 +39,21 @@ python manage.py runserver
 
 浏览器访问 `http://127.0.0.1:8000/`。
 
-Windows 激活虚拟环境时使用 `.venv\Scripts\activate`。管理员账号由 `createsuperuser` 交互创建，仓库不提供固定账号密码；初次运行请自行上传 Markdown 发布文章。
+Windows 激活虚拟环境时使用 `.venv\Scripts\activate`。管理员账号由 `createsuperuser` 交互创建；初次运行请自行上传 Markdown 发布文章。
 
 停止服务：在运行服务的终端按 `Ctrl+C`。以后再次启动时，进入项目目录、激活虚拟环境，然后运行 `python manage.py runserver`。更新代码后先执行 `python manage.py migrate`。
 
 图片识别还需要系统安装 Tesseract；macOS 可运行 `brew install tesseract`。未安装时，上传流程仍可进入人工校正页手动录入。
+
+## 演示管理员账号
+
+| 项目 | 内容 |
+| --- | --- |
+| 用户名 | `karanoli` |
+| 密码 | `1145141919810` |
+| 管理后台 | `http://127.0.0.1:8000/admin/` |
+
+以上为项目本地演示使用的管理员账号。源码仓库不包含 `db.sqlite3`，因此下载项目后不会自动出现这个账号。首次运行时执行 `python manage.py createsuperuser --username karanoli`，按提示设置上述演示密码或自己的密码，即可使用管理员功能。若采用其他端口，请相应替换后台地址中的 `8000`。
 
 ## 已实现功能
 
