@@ -1,0 +1,25 @@
+{% extends 'game/base.html' %}
+{% block title %}文章 · karanoli的小屋{% endblock %}
+{% block content %}
+<section class="articles-shell">
+  <header class="articles-heading">
+    <span class="eyebrow">NOTES & STORIES</span>
+    <h1>文章</h1>
+    <p>收下日常记录、零碎想法，以及那些值得慢慢写完的事情。</p>
+  </header>
+  {% if page.object_list %}
+    <div class="article-list">
+      {% for article in page.object_list %}
+        <a class="article-list-item" href="{% url 'article-detail' article.slug %}">
+          <time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:'Y.m.d' }}</time>
+          <div><h2>{{ article.title }}</h2><p>{{ article.summary|default:article.content|striptags|truncatechars:150 }}</p></div>
+          <span>→</span>
+        </a>
+      {% endfor %}
+    </div>
+    {% if page.has_other_pages %}<nav class="pagination" aria-label="文章分页">{% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">← 上一页</a>{% endif %}<span>{{ page.number }} / {{ page.paginator.num_pages }}</span>{% if page.has_next %}<a href="?page={{ page.next_page_number }}">下一页 →</a>{% endif %}</nav>{% endif %}
+  {% else %}
+    <div class="articles-empty"><span>✎</span><h2>还没有发布文章</h2><p>在后台发布第一篇文章后，它会自动出现在这里。</p></div>
+  {% endif %}
+</section>
+{% endblock %}

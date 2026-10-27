@@ -1,0 +1,398 @@
+/* Blog shell for karanoli's cottage. The Sudoku interface keeps its own blue palette. */
+:root {
+  --cottage-plum: #593446;
+  --cottage-wine: #8d4056;
+  --cottage-pink: #efb6bd;
+  --cottage-blush: #fae9e7;
+  --cottage-cream: #fffdf6;
+  --cottage-navy: #34374a;
+}
+
+body {
+  background: var(--cottage-cream);
+}
+
+/* 账户页面沿用小屋配色，链接同时保持足够的可见性。 */
+.auth-intro {
+  margin: -14px 0 24px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.account-link {
+  display: inline-block;
+  color: var(--cottage-wine);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.account-link:hover {
+  text-decoration: underline;
+}
+
+main {
+  min-height: calc(100vh - 78px);
+}
+
+.site-header {
+  background: rgba(255, 253, 246, .92);
+  border-bottom-color: rgba(89, 52, 70, .12);
+}
+
+.brand-avatar {
+  width: 42px;
+  height: 42px;
+  display: block;
+  object-fit: cover;
+  object-position: center 22%;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 5px 16px rgba(89, 52, 70, .2);
+}
+
+.brand-avatar.large {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 20px;
+  border-width: 3px;
+}
+
+.cottage-hero {
+  min-height: 690px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, .86fr);
+  align-items: center;
+  gap: clamp(44px, 7vw, 110px);
+  padding: 72px max(7vw, 44px) 86px;
+  overflow: hidden;
+  position: relative;
+  background:
+    radial-gradient(circle at 8% 16%, rgba(239, 182, 189, .22), transparent 24%),
+    linear-gradient(135deg, #fffdf7 0%, #fffaf6 58%, #f8edf1 100%);
+}
+
+.cottage-hero::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  right: -65px;
+  bottom: -65px;
+  border: 1px solid rgba(141, 64, 86, .18);
+  border-radius: 50%;
+  box-shadow: 0 0 0 28px rgba(141, 64, 86, .035), 0 0 0 56px rgba(141, 64, 86, .025);
+}
+
+.cottage-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.cottage-copy .eyebrow,
+.cottage-guide .eyebrow {
+  color: var(--cottage-wine);
+}
+
+.cottage-copy h1 {
+  margin: 22px 0 26px;
+  color: var(--cottage-navy);
+  font: 700 clamp(50px, 6vw, 82px)/1.12 "Noto Serif SC", serif;
+  letter-spacing: -3px;
+}
+
+.cottage-copy h1 em {
+  color: var(--cottage-wine);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.cottage-copy > p {
+  max-width: 600px;
+  margin: 0;
+  color: #776a72;
+  font-size: 17px;
+  line-height: 1.9;
+}
+
+.cottage-primary {
+  background: var(--cottage-wine) !important;
+  box-shadow: 0 10px 24px rgba(141, 64, 86, .2) !important;
+}
+
+.cottage-primary:hover {
+  background: var(--cottage-plum) !important;
+}
+
+.cottage-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #8a7b83;
+  font-size: 12px;
+}
+
+.cottage-status span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cf7285;
+  box-shadow: 0 0 0 5px rgba(207, 114, 133, .13);
+}
+
+.cottage-portrait {
+  min-height: 510px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.portrait-halo {
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f4c7ca, #f5e2d7 65%, #d8bfd0);
+  box-shadow: 0 30px 90px rgba(89, 52, 70, .14);
+}
+
+.portrait-frame {
+  width: min(405px, 88%);
+  height: 500px;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  border: 10px solid rgba(255, 255, 255, .88);
+  border-radius: 48% 48% 27% 27% / 34% 34% 18% 18%;
+  background: #fff;
+  box-shadow: 0 25px 70px rgba(76, 48, 62, .22);
+  transform: rotate(1.5deg);
+}
+
+.portrait-frame img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.portrait-sticker {
+  position: absolute;
+  z-index: 3;
+  padding: 11px 17px;
+  border: 1px solid rgba(89, 52, 70, .12);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, .94);
+  color: var(--cottage-wine);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .6px;
+  box-shadow: 0 12px 30px rgba(89, 52, 70, .15);
+}
+
+.sticker-top {
+  top: 57px;
+  right: -4px;
+  transform: rotate(5deg);
+}
+
+.sticker-bottom {
+  bottom: 47px;
+  left: -12px;
+  transform: rotate(-5deg);
+}
+
+.cottage-guide {
+  padding: 104px max(7vw, 44px);
+  background: #fff;
+}
+
+.guide-heading {
+  max-width: 650px;
+  margin-bottom: 46px;
+}
+
+.guide-heading h2,
+.game-corner h2 {
+  margin: 14px 0;
+  color: var(--cottage-navy);
+  font: 700 clamp(34px, 4vw, 52px)/1.25 "Noto Serif SC", serif;
+}
+
+.guide-heading p,
+.game-corner-copy > p {
+  color: #7b6f76;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.guide-card {
+  min-height: 245px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px;
+  border: 1px solid rgba(89, 52, 70, .1);
+  border-radius: 20px;
+  background: #fffcf8;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.guide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(89, 52, 70, .1);
+}
+
+.guide-card.game-card {
+  background: var(--cottage-plum);
+  color: #fff;
+}
+
+.guide-number {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  opacity: .55;
+}
+
+.guide-card h3 {
+  margin: 28px 0 10px;
+  font: 700 25px "Noto Serif SC", serif;
+}
+
+.guide-card p {
+  margin: 0;
+  color: #8b7e85;
+  line-height: 1.75;
+}
+
+.guide-card.game-card p {
+  color: #eadce2;
+}
+
+.guide-mark,
+.guide-arrow {
+  align-self: flex-end;
+  color: var(--cottage-wine);
+  font-size: 22px;
+}
+
+.guide-arrow {
+  color: #f6ccd3;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.game-corner {
+  min-height: 610px;
+  display: grid;
+  grid-template-columns: .84fr 1.16fr;
+  align-items: center;
+  gap: clamp(55px, 9vw, 130px);
+  padding: 96px max(9vw, 54px);
+  overflow: hidden;
+  background: #f8edf1;
+}
+
+.game-corner-copy {
+  max-width: 530px;
+}
+
+.text-link {
+  display: inline-flex;
+  gap: 18px;
+  margin-top: 24px;
+  color: var(--cottage-wine);
+  font-weight: 700;
+}
+
+.corner-board {
+  width: min(520px, 90%);
+  position: relative;
+  justify-self: center;
+  padding: 25px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(89, 52, 70, .13);
+  transform: rotate(2deg);
+}
+
+.corner-board .mini-board {
+  border-color: #41465a;
+}
+
+.corner-board .mini-board span {
+  color: #bd6177;
+}
+
+.corner-board .mini-board .given {
+  color: #41465a;
+}
+
+.corner-note {
+  position: absolute;
+  right: -56px;
+  bottom: 42px;
+  padding: 14px 19px;
+  border-radius: 12px;
+  background: var(--cottage-wine);
+  color: #f7dce1;
+  font-size: 11px;
+  line-height: 1.55;
+  box-shadow: 0 12px 30px rgba(89, 52, 70, .2);
+}
+
+.corner-note b {
+  color: #fff;
+  font-size: 15px;
+}
+
+@media (max-width: 980px) {
+  .cottage-hero {
+    grid-template-columns: 1fr 380px;
+    gap: 30px;
+  }
+
+  .portrait-halo {
+    width: 380px;
+    height: 380px;
+  }
+
+  .portrait-frame {
+    height: 450px;
+  }
+
+  .guide-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-card {
+    grid-column: 1 / -1;
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 760px) {
+  .cottage-hero,
+  .game-corner {
+    grid-template-columns: 1fr;
+  }
+
+  .cottage-portrait {
+    min-height: 480px;
+  }
+
+  .guide-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-card {
+    grid-column: auto;
+  }
+}

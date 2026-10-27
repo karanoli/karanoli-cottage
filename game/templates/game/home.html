@@ -1,0 +1,69 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block title %}karanoli的小屋{% endblock %}
+{% block content %}
+<section class="cottage-hero">
+  <div class="cottage-copy">
+    <span class="eyebrow">PERSONAL BLOG · 一方自己的小天地</span>
+    <h1>欢迎来到<br><em>karanoli的小屋</em></h1>
+    <p>这里会慢慢放进我的记录、想法与喜欢的东西。现在先开放一间小游戏室，随时可以坐下来玩一局数独。</p>
+    <div class="hero-actions">
+      <a class="button primary cottage-primary" href="{% url 'group-list' %}">去小游戏室 <span>→</span></a>
+      <a class="button ghost" href="#about">看看这间小屋</a>
+    </div>
+    <div class="cottage-status"><span></span> 小屋正在慢慢布置中</div>
+  </div>
+  <div class="cottage-portrait" aria-label="karanoli的小屋头像">
+    <div class="portrait-halo"></div>
+    <div class="portrait-frame"><img src="{% static 'game/images/karanoli-icon.jpeg' %}" alt="抱着兔子玩偶的金发女孩插画"></div>
+    <span class="portrait-sticker sticker-top">Welcome ♡</span>
+    <span class="portrait-sticker sticker-bottom">karanoli's corner</span>
+  </div>
+</section>
+<section class="article-preview">
+  <div class="article-preview-head">
+    <div><span class="eyebrow">LATEST NOTES</span><h2>最近的文章</h2></div>
+    <a class="text-link" href="{% url 'article-list' %}">全部文章 <span>→</span></a>
+  </div>
+  {% if articles %}
+    <div class="article-card-grid">
+      {% for article in articles %}
+        <a class="article-card" href="{% url 'article-detail' article.slug %}">
+          <time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:'Y.m.d' }}</time>
+          <h3>{{ article.title }}</h3>
+          <p>{{ article.summary|default:article.content|striptags|truncatechars:100 }}</p>
+          <span>继续阅读 →</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="article-empty"><span>✎</span><div><h3>文章正在准备中</h3><p>这里暂时留白，之后发布的内容会出现在这里。</p></div></div>
+  {% endif %}
+</section>
+<section class="cottage-guide" id="about">
+  <div class="guide-heading">
+    <span class="eyebrow">ABOUT THIS COTTAGE</span>
+    <h2>小屋里有什么？</h2>
+    <p>它首先是一个个人博客，也会收留一些我想长期保留下来的小工具和小游戏。</p>
+  </div>
+  <div class="guide-grid">
+    <a class="guide-card notes-card" href="{% url 'article-list' %}"><span class="guide-number">01</span><div><h3>随笔与记录</h3><p>在文章页收下日常记录、想法和值得留住的片段。</p></div><span class="guide-arrow dark">阅读 →</span></a>
+    <a class="guide-card game-card" href="{% url 'group-list' %}"><span class="guide-number">02</span><div><h3>小游戏室</h3><p>目前开放数独：支持键盘操作、候选数、智能提示和游戏记录。</p></div><span class="guide-arrow">进入 →</span></a>
+    <article class="guide-card about-card"><span class="guide-number">03</span><div><h3>关于小屋</h3><p>一个安静、轻松、可以慢慢生长的个人空间。</p></div><span class="guide-mark">⌂</span></article>
+  </div>
+</section>
+<section class="game-corner">
+  <div class="game-corner-copy">
+    <span class="eyebrow">MINI GAME · SUDOKU</span>
+    <h2>想安静一会儿，<br>就来填一盘数独。</h2>
+    <p>游客可以直接体验简单题；登录后可保存进度、解锁全部难度，并使用智能提示。</p>
+    <a class="text-link" href="{% url 'group-list' %}">打开数独小游戏 <span>→</span></a>
+  </div>
+  <div class="corner-board" aria-hidden="true">
+    <div class="mini-board">
+      {% for i in '534070000600195000098000060800060003400803001700020006060000280000419005000080079' %}<span class="{% if i != '0' %}given{% endif %}">{% if i != '0' %}{{ i }}{% endif %}</span>{% endfor %}
+    </div>
+    <span class="corner-note">小游戏室<br><b>今日开放</b></span>
+  </div>
+</section>
+{% endblock %}

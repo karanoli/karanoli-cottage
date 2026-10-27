@@ -1,0 +1,52 @@
+{% extends 'game/base.html' %}
+{% load game_extras %}
+{% block title %}个人中心 · karanoli的小屋{% endblock %}
+{% block content %}
+<section class="page-shell">
+  <div class="profile-head">
+    <div>
+      <span class="eyebrow">学习档案</span>
+      <h1>{{ user.username }}，今天也来一局吧。</h1>
+      <a class="account-link" href="{% url 'password-change' %}">修改登录密码 →</a>
+    </div>
+    <div class="wallet">
+      <span>金币余额</span><b>◉ {{ user.profile.coins }}</b>
+      <small>今日免费提示 {{ user.profile.free_hints_remaining }} / 3</small>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div><span>开始题目</span><b>{{ stats.total }}</b></div>
+    <div><span>成功完成</span><b>{{ stats.completed }}</b></div>
+    <div><span>失败局数</span><b>{{ stats.failed }}</b></div>
+    <div><span>平均用时</span><b>{{ stats.avg_time|duration }}</b></div>
+  </div>
+  <div class="profile-columns">
+    <section class="panel">
+      <div class="panel-head"><h2>最近做题</h2><a href="{% url 'group-list' %}">继续解题 →</a></div>
+      <div class="history-list">
+        {% for session in sessions %}
+          <a href="{% url 'game' session.puzzle_id %}">
+            <span class="status-dot {{ session.status }}">{% if session.status == 'completed' %}✓{% elif session.status == 'failed' %}!{% else %}·{% endif %}</span>
+            <div><b>{{ session.puzzle.title }}</b><small>{{ session.puzzle.group.name }} · {{ session.elapsed_seconds|duration }}</small></div>
+            <time>{{ session.last_saved_at|date:'m-d' }}</time>
+          </a>
+        {% empty %}<p class="muted">还没有做题记录。</p>{% endfor %}
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h2>金币流水</h2></div>
+      <div class="transaction-list">
+        {% for item in transactions %}
+          <div><span><b>{{ item.description }}</b><small>{{ item.created_at|date:'m-d H:i' }}</small></span><strong class="{% if item.amount > 0 %}positive{% endif %}">{{ item.amount|stringformat:'+d' }}</strong></div>
+        {% empty %}<p class="muted">暂无金币记录。</p>{% endfor %}
+      </div>
+    </section>
+  </div>
+  <section class="panel submissions">
+    <div class="panel-head"><h2>我的贡献</h2><a href="{% url 'submit-puzzle' %}">上传题目 →</a></div>
+    {% for item in submissions %}
+      <div class="submission-row"><b>投稿 #{{ item.id }}</b><span>{{ item.get_status_display }}</span><small>{{ item.get_difficulty_display|default:'待评估' }} · {{ item.created_at|date:'Y-m-d' }}</small></div>
+    {% empty %}<p class="muted">还没有贡献记录。上传合法题目，入库后可获 5 金币。</p>{% endfor %}
+  </section>
+</section>
+{% endblock %}

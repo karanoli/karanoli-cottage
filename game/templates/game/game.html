@@ -1,0 +1,57 @@
+{% extends 'game/base.html' %}{% load static game_extras %}
+{% block title %}{{ puzzle.title }} · karanoli的小屋{% endblock %}
+{% block content %}
+<section class="game-shell" id="game-app" data-session="{{ game_session.id }}" data-move-url="{% url 'game-move' game_session.id %}" data-save-url="{% url 'game-save' game_session.id %}" data-undo-url="{% url 'game-undo' game_session.id %}" data-hint-url="{% url 'game-hint' game_session.id %}" data-status="{{ game_session.status }}" data-elapsed="{{ game_session.elapsed_seconds }}" data-auth="{{ user.is_authenticated|yesno:'true,false' }}" data-notes-visible="{{ game_session.notes_visible|yesno:'true,false' }}">
+  <div class="game-topbar">
+    <a class="back-link" href="{% url 'puzzle-list' puzzle.group.slug %}">← {{ puzzle.group.name }}</a>
+    <div class="game-title"><span class="difficulty-pill {{ puzzle.difficulty }}">{{ puzzle.get_difficulty_display }}</span><h1>{{ puzzle.title }}</h1></div>
+  </div>
+  <div class="game-layout">
+    <div class="board-column">
+      <div id="sudoku-board" class="sudoku-board" role="grid" aria-label="数独棋盘"></div>
+      <p class="save-status" id="save-status">{% if user.is_authenticated %}进度已自动保存{% else %}游客进度不会保存{% endif %}</p>
+    </div>
+    <aside class="control-panel">
+      <div class="game-status-row">
+        <div class="status-block"><span>错误</span><b><i id="error-count">{{ game_session.error_count }}</i>/3</b></div>
+        <div class="status-block time-block"><span>时间</span><b class="timer" id="timer">{{ game_session.elapsed_seconds|duration }}</b></div>
+        <button class="pause-button" id="pause-button" title="暂停" aria-label="暂停">Ⅱ</button>
+      </div>
+
+      <div class="tool-row five-tools">
+        <div class="tool-item"><button id="undo-button" class="round-tool" aria-label="撤销" title="撤销"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 13 11 22l9 9M12 22h16c7 0 12 5 12 12s-5 11-12 11"/></svg></button><span>撤销</span></div>
+        <div class="tool-item"><button id="erase-button" class="round-tool" aria-label="删除" title="删除"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m10 31 18-18a4 4 0 0 1 6 0l5 5a4 4 0 0 1 0 6L24 39H13l-5-5a4 4 0 0 1 2-3Z"/><path d="m20 21 12 12M23 39h18"/></svg></button><span>删除</span></div>
+        <div class="tool-item"><button id="note-button" class="round-tool" aria-label="小数字输入" title="小数字输入"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="m13 36 3-11 17-17 7 7-17 17-10 4Z"/><path d="m16 25 7 7M10 40h30"/></svg><i class="tool-badge" id="note-mode-badge">OFF</i></button><span>小数字</span></div>
+        <div class="tool-item"><button id="visibility-button" class="round-tool note-visibility-tool" aria-label="显示或隐藏小数字" title="显示或隐藏小数字"><span class="mini-note-icon"><i>1</i><i>2</i><i>3</i><i>4</i><i>5</i><i>6</i><i>7</i><i>8</i><i>9</i></span><i class="tool-badge" id="visibility-badge">{% if game_session.notes_visible %}ON{% else %}OFF{% endif %}</i></button><span>显示笔记</span></div>
+        <div class="tool-item"><button id="hint-button" class="round-tool" aria-label="智能提示" title="智能提示" {% if not user.is_authenticated %}data-guest="true"{% endif %}><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M34 29c4-3 6-7 6-12a16 16 0 1 0-32 0c0 5 2 9 6 12 3 2 4 5 4 8h12c0-3 1-6 4-8Z"/><path d="M18 41h12M21 45h6"/></svg><i class="tool-badge hint-badge" id="hint-badge">{% if user.is_authenticated %}{% if profile.free_hints_remaining %}{{ profile.free_hints_remaining }}{% else %}100金币{% endif %}{% else %}登录{% endif %}</i></button><span>智能提示</span></div>
+      </div>
+
+      {% if user.is_authenticated %}<div class="wallet-line"><span>金币余额</span><b id="coin-count">◉ {{ profile.coins }}</b><span class="sr-only" id="free-hints">{{ profile.free_hints_remaining }}</span></div>{% else %}<div class="wallet-line guest"><span>游客模式 · 刷新或离开后进度清空</span></div>{% endif %}
+
+      <div class="number-pad" aria-label="数字键盘">{% for n in '123456789' %}<button data-number="{{ n }}">{{ n }}</button>{% endfor %}</div>
+      <form method="post" action="{% url 'new-game' puzzle.id %}" onsubmit="return confirm('{% if has_alternative_puzzle %}确定进入同一难度的下一道题吗？当前题进度会保留。{% else %}当前难度只有这一道题，将重新开始本题。{% endif %}')">{% csrf_token %}<button class="new-game-button">新游戏</button></form>
+      <button id="auto-notes" class="auto-notes-link">✦ 自动计算候选数</button>
+      <p class="shortcut-line">方向键移动 · Tab 显示/隐藏笔记 · Shift 切换小数字模式</p>
+      <p class="rule-line">错误数字会保留并标红；改填后重新判断，累计 3 次错误后本局失败。</p>
+    </aside>
+  </div>
+  <div class="game-overlay hidden" id="pause-overlay"><div><span>Ⅱ</span><h2>思考暂停</h2><p>计时已经停下，棋盘也暂时藏起来。</p><button class="button primary" id="resume-button">继续解题</button></div></div>
+  <div class="modal-backdrop hidden" id="hint-modal"><div class="hint-modal"><button class="modal-close" aria-label="关闭">×</button><span class="eyebrow" id="hint-level">智能分析</span><h2 id="hint-title">正在观察盘面…</h2><div id="hint-content"><p>我们会先寻找最清楚、最容易理解的一步。</p></div><div class="hint-actions"><button class="button primary" id="hint-close">回到棋盘</button></div></div></div>
+  <div class="modal-backdrop {% if game_session.status == 'playing' %}hidden{% endif %}" id="result-modal">
+    <div class="result-modal">
+      <span class="result-mark" id="result-mark">{% if game_session.status == 'completed' %}✓{% else %}!{% endif %}</span>
+      <h2 id="result-title">{% if game_session.status == 'completed' %}漂亮，完成了！{% else %}本局结束{% endif %}</h2>
+      <p id="result-copy">{% if game_session.status == 'completed' %}每一步推理都留下了痕迹。{% else %}累计 3 次错误，棋盘已锁定。重新开始后再试一次吧。{% endif %}</p>
+      <div class="result-actions">
+        <form method="post" action="{% url 'reset-game' puzzle.id %}">
+          {% csrf_token %}
+          <button class="button primary" type="submit">{% if game_session.status == 'completed' %}再玩一次{% else %}重新开始{% endif %}</button>
+        </form>
+        <a class="button ghost" href="{% url 'puzzle-list' puzzle.group.slug %}">返回题目列表</a>
+      </div>
+    </div>
+  </div>
+</section>
+{{ puzzle.puzzle|json_script:'puzzle-data' }}{{ game_session.board|json_script:'board-data' }}{{ game_session.wrong_values|json_script:'wrong-values-data' }}{{ game_session.notes|json_script:'notes-data' }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'game/game.js' %}?v=20261017-live-notes"></script>{% endblock %}

@@ -1,0 +1,38 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}karanoli的小屋{% endblock %}</title>
+  <link rel="icon" type="image/jpeg" href="{% static 'game/images/karanoli-icon.jpeg' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'game/style.css' %}">
+  <link rel="stylesheet" href="{% static 'game/blog.css' %}">
+  <link rel="stylesheet" href="{% static 'game/article.css' %}?v=20261027-comments">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'home' %}"><img class="brand-avatar" src="{% static 'game/images/karanoli-icon.jpeg' %}" alt=""><span>karanoli的小屋<small>KARANOLI'S COTTAGE</small></span></a>
+    <nav aria-label="主导航">
+      <a href="{% url 'home' %}">首页</a>
+      <a href="{% url 'article-list' %}">文章</a>
+      <a href="{% url 'group-list' %}">小游戏</a>
+      <a href="{% url 'home' %}#about">关于</a>
+      {% if user.is_authenticated %}
+        {% if user.is_staff %}<a href="{% url 'admin:game_article_changelist' %}">文章管理</a>{% endif %}
+        <a href="{% url 'profile' %}">个人中心</a>
+        <form action="{% url 'logout' %}" method="post" class="inline-form">{% csrf_token %}<button class="nav-button">退出</button></form>
+      {% else %}
+        <a href="{% url 'login' %}">登录</a><a class="nav-cta" href="{% url 'register' %}">免费注册</a>
+      {% endif %}
+    </nav>
+  </header>
+  {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  <main>{% block content %}{% endblock %}</main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

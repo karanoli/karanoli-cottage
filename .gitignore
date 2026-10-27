@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+staticfiles/
+media/
+*.sqlite3
+*.sqlite3-*
+.env
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+report_images/profile.jpg
+report_images/admin_*
+.DS_Store

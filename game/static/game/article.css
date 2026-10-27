@@ -1,0 +1,311 @@
+/* 文章列表、首页文章预览和 Markdown/KaTeX 正文排版。 */
+.article-preview {
+  padding: 96px max(7vw, 44px);
+  background: #fffaf7;
+}
+
+.article-preview-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.article-preview-head h2 {
+  margin: 12px 0 0;
+  color: var(--cottage-navy);
+  font: 700 clamp(34px, 4vw, 50px)/1.25 "Noto Serif SC", serif;
+}
+
+.article-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.article-card {
+  min-height: 270px;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid rgba(89, 52, 70, .11);
+  border-radius: 20px;
+  background: #fff;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.article-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(89, 52, 70, .1);
+}
+
+.article-card time,
+.article-list-item time,
+.article-detail header > time {
+  color: #a08994;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+}
+
+.article-card h3 {
+  margin: 25px 0 12px;
+  color: var(--cottage-navy);
+  font: 700 24px/1.45 "Noto Serif SC", serif;
+}
+
+.article-card p {
+  flex: 1;
+  margin: 0 0 24px;
+  color: #7b6f76;
+  line-height: 1.75;
+}
+
+.article-card > span {
+  color: var(--cottage-wine);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.article-empty,
+.articles-empty {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 32px;
+  border: 1px dashed rgba(89, 52, 70, .22);
+  border-radius: 18px;
+  color: #80727a;
+  background: rgba(255, 255, 255, .62);
+}
+
+.article-empty > span,
+.articles-empty > span {
+  color: var(--cottage-wine);
+  font-size: 28px;
+}
+
+.article-empty h3,
+.article-empty p,
+.articles-empty h2,
+.articles-empty p {
+  margin: 3px 0;
+}
+
+.guide-arrow.dark {
+  color: var(--cottage-wine);
+}
+
+.articles-shell {
+  width: min(1080px, calc(100% - 48px));
+  min-height: calc(100vh - 78px);
+  margin: 0 auto;
+  padding: 82px 0 110px;
+}
+
+.articles-heading {
+  max-width: 700px;
+  margin-bottom: 54px;
+}
+
+.articles-heading h1 {
+  margin: 14px 0;
+  color: var(--cottage-navy);
+  font: 700 clamp(44px, 6vw, 72px)/1.18 "Noto Serif SC", serif;
+}
+
+.articles-heading p {
+  color: #7b6f76;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.article-list {
+  border-top: 1px solid rgba(89, 52, 70, .13);
+}
+
+.article-list-item {
+  display: grid;
+  grid-template-columns: 105px 1fr auto;
+  align-items: start;
+  gap: 34px;
+  padding: 34px 8px;
+  border-bottom: 1px solid rgba(89, 52, 70, .13);
+}
+
+.article-list-item h2 {
+  margin: -6px 0 10px;
+  color: var(--cottage-navy);
+  font: 700 26px/1.45 "Noto Serif SC", serif;
+}
+
+.article-list-item p {
+  margin: 0;
+  color: #81747b;
+  line-height: 1.75;
+}
+
+.article-list-item > span {
+  color: var(--cottage-wine);
+  font-size: 21px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 42px;
+  color: #8c7d85;
+  font-size: 13px;
+}
+
+.pagination a {
+  color: var(--cottage-wine);
+  font-weight: 700;
+}
+
+.articles-empty {
+  min-height: 220px;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.article-detail {
+  width: min(820px, calc(100% - 48px));
+  min-height: calc(100vh - 78px);
+  margin: 0 auto;
+  padding: 72px 0 120px;
+}
+
+.article-detail header {
+  padding: 22px 0 46px;
+  border-bottom: 1px solid rgba(89, 52, 70, .14);
+}
+
+.article-detail h1 {
+  margin: 18px 0 22px;
+  color: var(--cottage-navy);
+  font: 700 clamp(38px, 6vw, 62px)/1.28 "Noto Serif SC", serif;
+  letter-spacing: -1.5px;
+}
+
+.article-lead {
+  margin: 30px 0 0;
+  padding-left: 18px;
+  border-left: 3px solid var(--cottage-pink);
+  color: #75686f;
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.article-body {
+  padding-top: 42px;
+  color: #49444a;
+  font-size: 17px;
+  line-height: 1.95;
+  overflow-wrap: anywhere;
+}
+
+.article-body h1,
+.article-body h2,
+.article-body h3 {
+  margin: 1.65em 0 .7em;
+  color: var(--cottage-navy);
+  font-family: "Noto Serif SC", serif;
+  line-height: 1.45;
+}
+
+.article-body h2 { font-size: 28px; }
+.article-body h3 { font-size: 22px; }
+.article-body p { margin: 1.15em 0; }
+.article-body a { color: var(--cottage-wine); text-decoration: underline; }
+.article-body blockquote {
+  margin: 1.5em 0;
+  padding: 6px 22px;
+  border-left: 4px solid var(--cottage-pink);
+  color: #75686f;
+  background: #fff8f6;
+}
+
+.article-body code {
+  padding: .15em .38em;
+  border-radius: 5px;
+  background: #f3ecee;
+  color: #7e3d51;
+  font: .9em ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.article-body pre {
+  overflow-x: auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  /* 与 VS Code 常用设置一致：一个 Tab 显示为 4 个空格。 */
+  tab-size: 4;
+  -moz-tab-size: 4;
+}
+
+.article-body pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.article-body img { max-width: 100%; height: auto; border-radius: 14px; }
+.article-body table { width: 100%; border-collapse: collapse; }
+.article-body th,
+.article-body td { padding: 10px 12px; border: 1px solid #ded5d8; }
+.article-body .math-display {
+  margin: 1.3em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0;
+  text-align: center;
+}
+
+.article-body .math-display .katex-display { margin: 0; }
+.article-body .katex-display { overflow-x: auto; overflow-y: hidden; }
+
+@media (max-width: 760px) {
+  .article-card-grid { grid-template-columns: 1fr; }
+  .article-preview-head { align-items: start; flex-direction: column; }
+  .article-list-item { grid-template-columns: 1fr auto; gap: 12px; }
+  .article-list-item time { grid-column: 1 / -1; }
+}
+
+/* Difficulty is intentionally a single ordered row on desktop. */
+.group-grid.large.difficulty-grid {
+  max-width: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.difficulty-grid .group-card {
+  min-width: 0;
+}
+
+/* 评论独立于 Markdown 正文渲染，用户输入由 Django 转义后作为纯文本显示。 */
+.article-comments { margin-top: 64px; padding-top: 36px; border-top: 1px solid #ded5d8; scroll-margin-top: 24px; }
+.comments-heading h2 { margin: 0; font-size: 24px; color: var(--cottage-navy); }
+.comments-heading h2 span { margin-left: 8px; font-size: 16px; color: #a08994; }
+.comments-heading p, .comment-form-actions small { color: #80727a; font-size: 13px; }
+.comment-form { margin: 26px 0; }
+.comment-form label { display: block; margin-bottom: 12px; font-size: 14px; }
+.comment-form textarea { width: 100%; padding: 16px; border: 1px solid #ded5d8; border-radius: 12px; resize: vertical; min-height: 120px; font: inherit; line-height: 1.7; color: inherit; background: #fff; }
+.comment-form textarea:focus { outline: 2px solid var(--cottage-wine); outline-offset: 2px; }
+.comment-form-actions, .comment-guest-prompt, .comment-guest-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.comment-form-actions { margin-top: 12px; }
+.comment-guest-prompt { margin: 26px 0; padding: 24px; border: 1px dashed #ded5d8; border-radius: 14px; background: #fff; }
+.comment-guest-prompt p { color: #80727a; font-size: 13px; margin: 8px 0 0; }
+.comment-login { color: var(--cottage-wine); white-space: nowrap; }
+.comment-card { padding: 24px 0; border-bottom: 1px solid #eee6e9; scroll-margin-top: 24px; }
+.comment-meta { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.comment-meta time { font-size: 12px; color: #a08994; }
+.comment-content { margin: 14px 0; line-height: 1.8; overflow-wrap: anywhere; }
+.comment-delete { padding: 0; border: 0; background: none; color: #a08994; font-size: 12px; cursor: pointer; }
+.comment-delete:hover { color: #b34440; }
+.comments-empty { padding: 24px 0; color: #a08994; }
+.comments-pagination { display: flex; justify-content: center; align-items: center; gap: 24px; padding-top: 24px; font-size: 14px; }
+@media (max-width: 600px) { .comment-guest-prompt { align-items: flex-start; flex-direction: column; } }

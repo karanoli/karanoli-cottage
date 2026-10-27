@@ -1,0 +1,124 @@
+{% extends 'game/base.html' %}
+{% block title %}{{ article.title }} · karanoli的小屋{% endblock %}
+{% block content %}
+<article class="article-detail">
+  <a class="back-link" href="{% url 'article-list' %}">← 返回文章列表</a>
+  <header>
+    <span class="eyebrow">KARANOLI'S NOTE</span>
+    <h1>{{ article.title }}</h1>
+    <time datetime="{{ article.published_at|date:'c' }}">发布于 {{ article.published_at|date:'Y年m月d日' }}</time>
+    {% if article.summary %}<p class="article-lead">{{ article.summary }}</p>{% endif %}
+  </header>
+  <div class="article-body" id="article-body"></div>
+  <section class="article-comments" id="comments" aria-labelledby="comments-title">
+    <div class="comments-heading"><h2 id="comments-title">评论 <span>{{ comment_count }}</span></h2><p>留下一点想法，和小屋的朋友聊聊。</p></div>
+    {% if user.is_authenticated %}
+      <form class="comment-form" method="post" action="{% url 'article-comment-create' article.slug %}">
+        {% csrf_token %}
+        <label for="{{ comment_form.content.id_for_label }}">以 {{ user.username }} 的身份发表评论</label>
+        {{ comment_form.content }}
+        {{ comment_form.content.errors }}
+        <div class="comment-form-actions"><small>纯文本评论，最多 2000 字</small><button class="button primary" type="submit">发表评论</button></div>
+      </form>
+    {% else %}
+      <div class="comment-guest-prompt"><div><b>注册后即可参与评论</b><p>已经有账号？登录后就能分享你的想法。</p></div><div class="comment-guest-actions"><a class="button primary" href="{% url 'register' %}?next={{ request.path|add:'#comments'|urlencode }}">注册并评论</a><a class="comment-login" href="{% url 'login' %}?next={{ request.path|add:'#comments'|urlencode }}">登录</a></div></div>
+    {% endif %}
+    <div class="comment-list">
+      {% for comment in comments_page %}
+        <article class="comment-card" id="comment-{{ comment.id }}">
+          <div class="comment-meta"><b>{{ comment.user.username|default:'已注销用户' }}</b><time datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:'Y-m-d H:i' }}</time></div>
+          <div class="comment-content">{{ comment.content|linebreaksbr }}</div>
+          {% if user.is_authenticated and comment.user_id == user.id %}<form method="post" action="{% url 'article-comment-delete' comment.id %}" onsubmit="return confirm('确定删除这条评论吗？')">{% csrf_token %}<button class="comment-delete" type="submit">删除我的评论</button></form>{% endif %}
+        </article>
+      {% empty %}<p class="comments-empty">还没有评论，来留下第一条吧。</p>{% endfor %}
+    </div>
+    {% if comments_page.has_other_pages %}<nav class="comments-pagination" aria-label="评论分页">{% if comments_page.has_previous %}<a href="?comments_page={{ comments_page.previous_page_number }}#comments">← 上一页</a>{% endif %}<span>{{ comments_page.number }} / {{ comments_page.paginator.num_pages }}</span>{% if comments_page.has_next %}<a href="?comments_page={{ comments_page.next_page_number }}#comments">下一页 →</a>{% endif %}</nav>{% endif %}
+  </section>
+</article>
+{{ article.content|json_script:'article-source' }}
+{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.10.0/styles/vs2015.min.css">
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
+<script>
+  /**
+   * 在 Markdown 解析前保护块级公式。
+   *
+   * marked 会把含空行的 $$...$$ 拆成多个 <p>，KaTeX 因而无法找到成对
+   * 的定界符。这里先把块公式替换成占位元素，Markdown 渲染完成后再逐个
+   * 交给 KaTeX；代码围栏会被临时移走，避免误处理代码示例里的美元符号。
+   */
+  function protectDisplayMath(source) {
+    const codeFences = [];
+    const displayMath = [];
+
+    const sourceWithoutFences = source.replace(
+      /^(```|~~~)[^\n]*\n[\s\S]*?^\1[ \t]*$/gm,
+      (block) => {
+        const token = `@@ARTICLE_CODE_FENCE_${codeFences.length}@@`;
+        codeFences.push(block);
+        return token;
+      }
+    );
+
+    let protectedSource = sourceWithoutFences.replace(
+      /\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\]/g,
+      (_match, dollarMath, bracketMath) => {
+        const formula = (dollarMath ?? bracketMath).trim();
+        const index = displayMath.push(formula) - 1;
+        return `\n\n<div class="math-display" data-math-index="${index}"></div>\n\n`;
+      }
+    );
+
+    // 恢复原始代码围栏，让 marked 继续负责代码块的转义和样式。
+    protectedSource = protectedSource.replace(
+      /@@ARTICLE_CODE_FENCE_(\d+)@@/g,
+      (_match, index) => codeFences[Number(index)]
+    );
+
+    return {protectedSource, displayMath};
+  }
+
+  const articleSource = JSON.parse(document.getElementById('article-source').textContent);
+  const articleBody = document.getElementById('article-body');
+  articleBody.textContent = articleSource;
+
+  const {protectedSource, displayMath} = protectDisplayMath(articleSource);
+  if (window.marked) articleBody.innerHTML = marked.parse(protectedSource);
+
+  // 使用 highlight.js 的 VS 2015 主题为 Markdown 代码块自动着色。
+  if (window.hljs) {
+    articleBody.querySelectorAll('pre code').forEach((block) => hljs.highlightElement(block));
+  }
+
+  // 块级公式直接渲染到占位元素，不再依赖跨 DOM 节点寻找 $$ 定界符。
+  if (window.katex) {
+    articleBody.querySelectorAll('.math-display[data-math-index]').forEach((element) => {
+      const formula = displayMath[Number(element.dataset.mathIndex)];
+      katex.render(formula, element, {
+        displayMode: true,
+        throwOnError: false,
+        strict: 'ignore'
+      });
+    });
+  }
+
+  // 块级公式已经处理完毕；自动渲染器只负责正文中的行内公式。
+  if (window.renderMathInElement) {
+    renderMathInElement(articleBody, {
+      delimiters: [
+        {left: '\\(', right: '\\)', display: false},
+        {left: '$', right: '$', display: false}
+      ],
+      ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+      throwOnError: false
+    });
+  }
+</script>
+{% endblock %}

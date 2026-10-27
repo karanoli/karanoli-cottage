@@ -1,0 +1,62 @@
+{% extends 'game/base.html' %}
+{% block title %}贡献题目 · karanoli的小屋{% endblock %}
+{% block content %}
+<section class="page-shell narrow">
+  <a class="back-link" href="{% url 'profile' %}">← 返回个人中心</a>
+  <div class="page-heading">
+    <span class="eyebrow">共享好题</span>
+    <h1>添加数独题目</h1>
+    <p>可以上传题目图片自动识别，也可以打开空白棋盘直接输入。两种方式都无需提供答案。</p>
+  </div>
+  <div class="upload-card">
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {{ form.entry_mode.errors }}
+      <fieldset class="entry-methods">
+        <legend>选择录入方式</legend>
+        <label class="entry-method">
+          <input type="radio" name="entry_mode" value="image" {% if form.entry_mode.value != 'manual' %}checked{% endif %}>
+          <span><b>上传图片</b><small>自动识别后逐格核对</small></span>
+        </label>
+        <label class="entry-method">
+          <input type="radio" name="entry_mode" value="manual" {% if form.entry_mode.value == 'manual' %}checked{% endif %}>
+          <span><b>直接输入</b><small>从空白 9×9 棋盘开始</small></span>
+        </label>
+      </fieldset>
+      <div id="image-upload-fields" class="image-upload-fields">
+        {{ form.puzzle_image.errors }}
+        {{ form.puzzle_image.label_tag }}
+        {{ form.puzzle_image }}
+      </div>
+      <button id="submission-start" class="button primary full" type="submit">开始识别</button>
+    </form>
+    <div class="upload-tips">
+      <b>录入说明</b>
+      <ul>
+        <li>只需提供题面，答案由程序自动求解</li>
+        <li>图片模式请保证棋盘完整、画面清晰</li>
+        <li>识别结果中的空格会以空白显示，不显示 0</li>
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+const modeInputs = document.querySelectorAll('input[name="entry_mode"]');
+const imageFields = document.getElementById('image-upload-fields');
+const imageInput = document.getElementById('id_puzzle_image');
+const startButton = document.getElementById('submission-start');
+
+function syncEntryMode() {
+  const manual = document.querySelector('input[name="entry_mode"]:checked').value === 'manual';
+  imageFields.hidden = manual;
+  imageInput.disabled = manual;
+  startButton.textContent = manual ? '打开空白题面' : '开始识别';
+}
+
+modeInputs.forEach(input => input.addEventListener('change', syncEntryMode));
+syncEntryMode();
+</script>
+{% endblock %}

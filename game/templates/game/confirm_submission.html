@@ -1,0 +1,53 @@
+{% extends 'game/base.html' %}
+{% block title %}校正识别结果 · karanoli的小屋{% endblock %}
+{% block content %}
+<section class="page-shell">
+  <div class="page-heading compact">
+    <span class="eyebrow">题面录入</span>
+    <h1>请逐格核对题目数字</h1>
+    <p>空格直接留空；程序内部会按 0 处理。提交后将检查题面规则与唯一解，并自动生成完整答案。</p>
+  </div>
+  {% if submission.validation_errors %}
+    <div class="validation-box">
+      <b>需要修正：</b>
+      <ul>{% for error in submission.validation_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+    </div>
+  {% endif %}
+  <form method="post" class="confirm-form">
+    {% csrf_token %}
+    <div class="confirm-grids">
+      <div>
+        <h2>题面</h2>
+        <div class="edit-grid">
+          {% for row in submission.recognized_puzzle %}
+            {% for value in row %}
+              <input aria-label="题面格" type="text" inputmode="numeric" pattern="[1-9]?" maxlength="1" value="{% if value %}{{ value }}{% endif %}" data-prefix="p">
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="upload-tips">
+        <b>程序将自动完成</b>
+        <ul>
+          <li>检查行、列和宫内是否重复</li>
+          <li>判断题目是否有且只有一个解</li>
+          <li>生成完整答案并按难度自动分组</li>
+        </ul>
+      </div>
+    </div>
+    <button class="button primary" type="submit">自动求解并提交</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+document.querySelectorAll('.edit-grid').forEach(grid =>
+  [...grid.children].forEach((input, i) => {
+    input.name = `${input.dataset.prefix}_${Math.floor(i / 9)}_${i % 9}`;
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/[^1-9]/g, '').slice(-1);
+    });
+  })
+);
+</script>
+{% endblock %}
